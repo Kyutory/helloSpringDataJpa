@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 
 <head th:insert="~{common :: commonHead}">
   <title>Product Manager</title>
@@ -9,7 +10,21 @@
 <body>
 <div class="container">
   <h1 class="mt-5">Product List</h1>
-  <a class="btn btn-primary mb-3" th:href="@{/products/new}">Create New Product</a>
+  <div class="alert alert-success" th:if="${param.loginSuccess}">
+   안녕하세요. <span sec:authentication="principal.username">User</span>님, 로그인에 성공하셨습니다!
+  </div>
+  <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
+    <input class="btn btn-danger btn-sm" type="submit" value="로그아웃"/>
+  </form>
+  <br>
+  <div>
+    <a sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-primary mb-3" th:href="@{/admin/userList}">전체 사용자 목록 확인</a>
+  </div>
+  <br>
+  <div>
+    <a sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-primary mb-3" th:href="@{/products/admin/new}">Create New Product</a>
+    <a sec:authorize="!hasRole('ROLE_ADMIN')" class="btn btn-primary mb-3 disabled">Create New Product</a>
+  </div>
 
   <table class="table table-bordered">
     <thead>
@@ -30,8 +45,14 @@
       <td th:text="${product.madeIn}">Made in</td>
       <td th:text="${product.price}">Price</td>
       <td>
-        <a class="btn btn-primary btn-sm" th:href="@{'/products/edit/' + ${product.id}}">Edit</a>
-        <a class="btn btn-danger btn-sm" th:href="@{'/products/delete/' + ${product.id}}">Delete</a>
+        <div sec:authorize="hasRole('ROLE_ADMIN')">
+          <a class="btn btn-primary btn-sm" th:href="@{'/products/admin/edit/' + ${product.id}}">Edit</a>
+          <a class="btn btn-danger btn-sm" th:href="@{'/products/admin/delete/' + ${product.id}}">Delete</a>
+        </div>
+        <div sec:authorize="!hasRole('ROLE_ADMIN')">
+          <a class="btn btn-primary btn-sm disabled">Edit</a>
+          <a class="btn btn-danger btn-sm disabled">Delete</a>
+        </div>
       </td>
     </tr>
     </tbody>

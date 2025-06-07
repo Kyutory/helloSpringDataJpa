@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head th:insert="~{common :: commonHead}">
+  <title>User List</title>
+</head>
+
+<body>
+<div class="container">
+  <h1 class="mt-5">User List</h1>
+
+  <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
+    <input class="btn btn-danger btn-sm" type="submit" value="로그아웃"/>
+  </form>
+  <br>
+
+  <div>
+    <a class="btn btn-primary mb-3" th:href="@{/products}">상품 목록 확인</a>
+  </div>
+
+  <table class="table table-bordered">
+    <thead>
+    <tr>
+      <th>User ID</th>
+      <th>Email</th>
+      <th>Roles</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${listUsers}">
+      <td th:text="${user.id}">User ID</td>
+      <td th:text="${user.email}">Email</td>
+      <td th:text="${user.rolesWithFormattedString}">Roles</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Bootstrap JS fragment 삽입 -->
+<div th:insert="~{common :: commonScript}"></div>
+</body>
+</html>
